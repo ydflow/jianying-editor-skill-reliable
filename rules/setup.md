@@ -24,6 +24,7 @@ skill_candidates = [
     os.path.join(current_dir, ".trae", "skills", "jianying-editor"),
     os.path.join(current_dir, ".claude", "skills", "jianying-editor"),
     os.path.join(current_dir, "skills", "jianying-editor"),
+    os.path.abspath(".agent/skills/jianying-editor-reliable"),
     os.path.abspath(".agent/skills/jianying-editor"),
     os.path.dirname(current_dir),  # when script is under examples/
 ]

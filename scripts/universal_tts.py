@@ -19,8 +19,15 @@ def get_jy_local_config() -> Tuple[str, str]:
         home = os.path.expanduser("~")
         candidates = [
             os.path.join(
-                home, "Library", "Containers", "com.lemon.lvpro", "Data",
-                "Library", "Application Support", "JianyingPro", "User Data",
+                home,
+                "Library",
+                "Containers",
+                "com.lemon.lvpro",
+                "Data",
+                "Library",
+                "Application Support",
+                "JianyingPro",
+                "User Data",
             ),
             os.path.join(home, "Library", "Application Support", "JianyingPro", "User Data"),
         ]

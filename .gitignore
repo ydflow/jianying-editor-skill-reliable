@@ -22,6 +22,7 @@ build/
 test_run_artifacts/
 cloud_cache/
 scripts/cloud_cache/
+.jianying-editor-backups/
 *.webm
 
 # Assets (large synced files - keep tracked manually)

@@ -30,13 +30,13 @@ If draft path differs, set `JY_PROJECTS_ROOT` and continue.
 
 ### macOS
 ```bash
-ls .agents/skills/jianying-editor/assets/ 2>/dev/null || \
-  ls .agent/skills/jianying-editor/assets/
+ls .agents/skills/jianying-editor-reliable/assets/ 2>/dev/null || \
+  ls .agent/skills/jianying-editor-reliable/assets/
 ```
 
 ### Windows
 ```powershell
-Get-ChildItem .agent\skills\jianying-editor\assets -File
+Get-ChildItem .agent\skills\jianying-editor-reliable\assets -File
 ```
 
 Do not recursively scan the whole workspace unless asset lookup fails.

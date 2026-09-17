@@ -1,0 +1,49 @@
+name: Bug report
+description: Report a reproducible problem in JianYing Editor Reliable
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include private media, account cookies, tokens, or complete personal draft files.
+  - type: input
+    id: version
+    attributes:
+      label: Reliable Edition version
+      placeholder: 1.8.0-reliable.1
+    validations:
+      required: true
+  - type: input
+    id: jianying
+    attributes:
+      label: JianYing version and operating system
+      placeholder: JianYing 11.4.2 / Windows 11
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include the exact command and a minimal non-private example.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Read-only doctor output
+      description: Paste `python scripts/doctor.py --json` after removing local paths if needed.
+      render: json
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed tokens, cookies, personal paths, and private media metadata.
+          required: true

@@ -1,16 +1,42 @@
-import os
+import hashlib
 import json
+import os
 import subprocess
 from typing import Optional
 
 
-def _norm_output_path(input_path: str) -> str:
+def _cache_root() -> str:
+    configured = os.getenv("JY_CACHE_ROOT", "").strip()
+    if configured:
+        return os.path.abspath(configured)
+    if os.name == "nt" and os.getenv("LOCALAPPDATA"):
+        return os.path.join(os.environ["LOCALAPPDATA"], "JianYingEditorReliable", "cache")
+    return os.path.join(os.path.expanduser("~"), ".cache", "jianying-editor-reliable")
+
+
+def _norm_output_path(
+    input_path: str,
+    target_width: Optional[int] = None,
+    target_height: Optional[int] = None,
+    target_fps: Optional[float] = None,
+) -> str:
     abs_in = os.path.abspath(input_path)
-    parent = os.path.dirname(abs_in)
     stem, _ = os.path.splitext(os.path.basename(abs_in))
-    cache_dir = os.path.join(parent, "__jycache__")
+    stat = os.stat(abs_in)
+    cache_key = "|".join(
+        [
+            abs_in,
+            str(stat.st_size),
+            str(stat.st_mtime_ns),
+            str(target_width or "source"),
+            str(target_height or "source"),
+            str(target_fps or "source"),
+        ]
+    )
+    digest = hashlib.sha256(cache_key.encode("utf-8")).hexdigest()[:20]
+    cache_dir = os.path.join(_cache_root(), "media")
     os.makedirs(cache_dir, exist_ok=True)
-    return os.path.join(cache_dir, f"{stem}.__jy_norm__.mp4")
+    return os.path.join(cache_dir, f"{stem}.{digest}.__jy_norm__.mp4")
 
 
 def _is_cache_fresh(src: str, dst: str) -> bool:
@@ -30,7 +56,7 @@ def _probe_video(input_path: str) -> dict:
         "-select_streams",
         "v:0",
         "-show_entries",
-        "stream=codec_name,width,height,pix_fmt",
+        "stream=codec_name,width,height,pix_fmt,r_frame_rate",
         "-of",
         "json",
         input_path,
@@ -56,19 +82,25 @@ def should_normalize_video_for_jianying(input_path: str) -> bool:
         or info.get("pix_fmt") != "yuv420p"
         or width <= 0
         or height <= 0
-        or width % 16 != 0
+        or width % 2 != 0
         or height % 2 != 0
     )
 
 
-def normalize_video_for_jianying(input_path: str, force: bool = False) -> Optional[str]:
+def normalize_video_for_jianying(
+    input_path: str,
+    force: bool = False,
+    target_width: Optional[int] = None,
+    target_height: Optional[int] = None,
+    target_fps: Optional[float] = None,
+) -> Optional[str]:
     """
     Convert video to JianYing-friendly MP4 before timeline import.
 
     Output profile:
     - Video: H.264 (libx264), yuv420p
     - Audio: AAC (optional if source has audio)
-    - Geometry: 1920x1080 with padding when needed
+    - Geometry and frame rate: preserve source values unless explicitly requested
     """
     src = os.path.abspath(input_path)
     if not os.path.exists(src):
@@ -76,9 +108,20 @@ def normalize_video_for_jianying(input_path: str, force: bool = False) -> Option
     if not force and not should_normalize_video_for_jianying(src):
         return src
 
-    dst = _norm_output_path(src)
+    if bool(target_width) != bool(target_height):
+        raise ValueError("target_width and target_height must be provided together")
+
+    dst = _norm_output_path(src, target_width, target_height, target_fps)
     if _is_cache_fresh(src, dst):
         return dst
+
+    if target_width and target_height:
+        video_filter = (
+            f"scale={int(target_width)}:{int(target_height)}:force_original_aspect_ratio=decrease,"
+            f"pad={int(target_width)}:{int(target_height)}:(ow-iw)/2:(oh-ih)/2"
+        )
+    else:
+        video_filter = "scale=trunc(iw/2)*2:trunc(ih/2)*2"
 
     cmd = [
         "ffmpeg",
@@ -93,10 +136,7 @@ def normalize_video_for_jianying(input_path: str, force: bool = False) -> Option
         "-map",
         "0:a?",
         "-vf",
-        "scale=1920:1080:force_original_aspect_ratio=decrease,"
-        "pad=1920:1080:(ow-iw)/2:(oh-ih)/2",
-        "-r",
-        "30",
+        video_filter,
         "-c:v",
         "libx264",
         "-pix_fmt",
@@ -111,8 +151,10 @@ def normalize_video_for_jianying(input_path: str, force: bool = False) -> Option
         "192k",
         "-movflags",
         "+faststart",
-        dst,
     ]
+    if target_fps:
+        cmd.extend(["-r", str(target_fps)])
+    cmd.append(dst)
 
     try:
         proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

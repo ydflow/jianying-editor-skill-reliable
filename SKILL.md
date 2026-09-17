@@ -1,9 +1,9 @@
 ---
-name: jianying-editor
-description: 剪映 (JianYing) AI自动化剪辑的高级封装 API (JyWrapper)，提供开箱即用的 Python 接口，支持录屏、素材导入、字幕生成、Web 动效合成及项目导出。全面适配 MacOS (Apple Silicon/Intel) 与 Windows，支持 v5.9+ (draft_info.json) 架构、工程自修复、智能配音字幕及录屏变焦。
+name: jianying-editor-reliable
+description: 安全生成、检查和导出桌面版剪映草稿，支持素材、字幕、配音、转场、录屏和 Web 动效。在覆盖已有草稿、修复或自动导出时应显式备份、预检版本并保留可验收结果；不用于 CapCut 国际版或手机端剪映。
 ---
 
-# JianYing Editor Skill
+# JianYing Editor Reliable
 
 Use this skill when the user wants to automate video editing, generate drafts, or manipulate media assets in JianYing Pro.
 
@@ -18,10 +18,14 @@ For generic editing requests, always follow the "Quick Edit Runtime Template" an
 
 ## 🚨 重要开发原则 (CRITICAL DEVELOPER RULES)
 1.  **脚本位置**：**禁止在 Skill 内部目录创建剪辑脚本**。所有的剪辑逻辑实现代码（`.py` 脚本）必须存放在用户当前项目的**根目录**（或子目录，如 `scripts/`），以保持 Skill 库的纯净和可移植性。
-2.  **版本与架构**：
+2.  **草稿安全**：
+    - 默认加载已有草稿，不覆盖。只在用户明确要求重建或替换时使用 `overwrite=True`。
+    - 覆盖前必须保留自动备份，并向用户报告 `last_backup_path`。
+    - 环境检查默认运行 `scripts/doctor.py --json`；只有用户允许创建测试草稿时才运行 `api_validator.py --smoke`。
+3.  **版本与架构**：
     - **双平台适配**：已全面支持 MacOS (路径探测/录屏) 与 Windows。
-    - **Auto-healing**：支持 v5.9+ (`draft_info.json`)。若草稿损坏或版本冲突，使用 `overwrite=True` 初始化 `JyProject` 可触发自动修复。
-3.  **配乐选择**：
+    - **Safe recovery**：支持 v5.9+ (`draft_info.json`)；重建异常草稿前先移入时间戳备份目录。
+4.  **配乐选择**：
     - **简单演示使用默认音乐**。实际项目，应优先检索并推荐 `data/cloud_music_library.csv` 中的相关曲目，或根据视频主题（如“科技”、“温暖”）进行关键词过滤。
     - 询问用户：“我发现了几首符合主题的云端音乐，要不要试试？（如：`Illuminate` - 科技感）”。
 
@@ -110,7 +114,9 @@ Use these templates and scripts for complex tasks:
   ```
 - **API Validator**: Run a quick diagnostic of your environment:
   ```bash
-  python <SKILL_ROOT>/scripts/api_validator.py
+  python <SKILL_ROOT>/scripts/doctor.py --json
+  # Explicitly create a diagnostic draft only when authorized:
+  python <SKILL_ROOT>/scripts/api_validator.py --smoke --json
   ```
 
 ## 🚀 快速开始示例
@@ -125,11 +131,21 @@ env_root = os.getenv("JY_SKILL_ROOT", "").strip()
 # 探测 Skill 路径 (支持 Antigravity, Trae, Claude 等)
 skill_root = next((p for p in [
     env_root,
+    os.path.join(current_dir, ".agents", "skills", "jianying-editor-reliable"),
+    os.path.join(current_dir, ".agent", "skills", "jianying-editor-reliable"),
+    os.path.join(current_dir, ".trae", "skills", "jianying-editor-reliable"),
+    os.path.join(current_dir, ".claude", "skills", "jianying-editor-reliable"),
+    os.path.join(current_dir, "skills", "jianying-editor-reliable"),
     os.path.join(current_dir, ".agents", "skills", "jianying-editor"),
     os.path.join(current_dir, ".agent", "skills", "jianying-editor"),
     os.path.join(current_dir, ".trae", "skills", "jianying-editor"),
     os.path.join(current_dir, ".claude", "skills", "jianying-editor"),
     os.path.join(current_dir, "skills", "jianying-editor"),
+    os.path.abspath(".agents/skills/jianying-editor-reliable"),
+    os.path.abspath(".agent/skills/jianying-editor-reliable"),
+    os.path.abspath(".trae/skills/jianying-editor-reliable"),
+    os.path.abspath(".claude/skills/jianying-editor-reliable"),
+    os.path.abspath("skills/jianying-editor-reliable"),
     os.path.abspath(".agents/skills/jianying-editor"),
     os.path.abspath(".agent/skills/jianying-editor"),
     os.path.abspath(".trae/skills/jianying-editor"),
@@ -143,8 +159,8 @@ sys.path.insert(0, os.path.join(skill_root, "scripts"))
 from jy_wrapper import JyProject
 
 if __name__ == "__main__":
-    # 2. 初始化工程 (支持 v5.9+ 及自修复)
-    project = JyProject("New AI Video", overwrite=True)
+    # 2. 默认不覆盖已有工程。只有显式重建时才传 overwrite=True。
+    project = JyProject("New AI Video")
     assets_dir = os.path.join(skill_root, "assets")
 
     # 3. 智能配音与字幕 (One-click Script-to-Video)

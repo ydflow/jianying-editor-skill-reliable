@@ -1,7 +1,9 @@
-import os
 import json
+import os
 import uuid
+
 import pyJianYingDraft as draft
+
 
 class MockVideoMaterial(draft.VideoMaterial):
     def __init__(self, material_id, duration, name, path):
@@ -9,11 +11,17 @@ class MockVideoMaterial(draft.VideoMaterial):
         self.duration = duration
         self.material_name = name
         self.path = path
+
     def serialize(self):
         return {
-            "id": self.material_id, "type": "video", "name": self.material_name, "path": self.path,
-            "duration": self.duration, "material_id": self.material_id
+            "id": self.material_id,
+            "type": "video",
+            "name": self.material_name,
+            "path": self.path,
+            "duration": self.duration,
+            "material_id": self.material_id,
         }
+
 
 class MockAudioMaterial(draft.AudioMaterial):
     def __init__(self, material_id, duration, name, path):
@@ -21,32 +29,44 @@ class MockAudioMaterial(draft.AudioMaterial):
         self.duration = duration
         self.material_name = name
         self.path = path
+
     def serialize(self):
         return {
-            "id": self.material_id, "type": "audio", "name": self.material_name, "path": self.path,
-            "duration": self.duration, "material_id": self.material_id
+            "id": self.material_id,
+            "type": "audio",
+            "name": self.material_name,
+            "path": self.path,
+            "duration": self.duration,
+            "material_id": self.material_id,
         }
+
 
 class CompoundSegment:
     def __init__(self, material_id, target_timerange):
         self.material_id = material_id
         self.target_timerange = target_timerange
+
     def serialize(self):
         return {
-             "id": str(uuid.uuid4()).upper(), "material_id": self.material_id,
-             "target_timerange": self.target_timerange.serialize(),
-             "render_index": 0, "type": "video"
+            "id": str(uuid.uuid4()).upper(),
+            "material_id": self.material_id,
+            "target_timerange": self.target_timerange.serialize(),
+            "render_index": 0,
+            "type": "video",
         }
+
 
 class MockingOpsMixin:
     """
     JyProject 的协议补丁与伪物料 Mixin。
     """
+
     def _force_activate_adjustments(self):
         content_path = os.path.join(self.root, self.name, "draft_info.json")
         if not os.path.exists(content_path):
             content_path = os.path.join(self.root, self.name, "draft_content.json")
-        if not os.path.exists(content_path): return
+        if not os.path.exists(content_path):
+            return
 
         try:
             with open(content_path, "r", encoding="utf-8") as f:
@@ -56,13 +76,19 @@ class MockingOpsMixin:
             materials = data.setdefault("materials", {})
             all_effects = materials.setdefault("effects", [])
 
-            PROP_MAP = {"KFTypeBrightness": "brightness", "KFTypeContrast": "contrast", "KFTypeSaturation": "saturation"}
+            PROP_MAP = {
+                "KFTypeBrightness": "brightness",
+                "KFTypeContrast": "contrast",
+                "KFTypeSaturation": "saturation",
+            }
             jy_res_path = "C:/Program Files/JianyingPro/5.9.0.11632/Resources/DefaultAdjustBundle/combine_adjust"
 
             for track in data.get("tracks", []):
                 for seg in track.get("segments", []):
                     kfs = seg.get("common_keyframes", [])
-                    active_props = [kf.get("property_type") for kf in kfs if kf.get("property_type") in PROP_MAP]
+                    active_props = [
+                        kf.get("property_type") for kf in kfs if kf.get("property_type") in PROP_MAP
+                    ]
 
                     if active_props:
                         seg["enable_adjust"] = True
@@ -71,11 +97,19 @@ class MockingOpsMixin:
 
                         for prop in active_props:
                             mat_type = PROP_MAP[prop]
-                            if not any(m.get("type") == mat_type and m["id"] in refs for m in all_effects):
+                            if not any(
+                                m.get("type") == mat_type and m["id"] in refs for m in all_effects
+                            ):
                                 new_id = str(uuid.uuid4()).upper()
                                 shadow_mat = {
-                                    "type": mat_type, "value": 0.0, "path": jy_res_path, "id": new_id,
-                                    "apply_target_type": 0, "platform": "all", "source_platform": 0, "version": "v2"
+                                    "type": mat_type,
+                                    "value": 0.0,
+                                    "path": jy_res_path,
+                                    "id": new_id,
+                                    "apply_target_type": 0,
+                                    "platform": "all",
+                                    "source_platform": 0,
+                                    "version": "v2",
                                 }
                                 all_effects.append(shadow_mat)
                                 refs.append(new_id)
@@ -88,11 +122,13 @@ class MockingOpsMixin:
             print(f"⚠️ Force activation failed: {e}")
 
     def _patch_cloud_material_ids(self):
-        if not self._cloud_audio_patches and not self._cloud_text_patches: return
+        if not self._cloud_audio_patches and not self._cloud_text_patches:
+            return
         content_path = os.path.join(self.root, self.name, "draft_info.json")
         if not os.path.exists(content_path):
             content_path = os.path.join(self.root, self.name, "draft_content.json")
-        if not os.path.exists(content_path): return
+        if not os.path.exists(content_path):
+            return
 
         try:
             with open(content_path, "r", encoding="utf-8") as f:
@@ -109,7 +145,7 @@ class MockingOpsMixin:
                             mat["music_id"] = patch_info["id"]
                             mat["type"] = "music"
                             has_modified = True
-            
+
             if has_modified:
                 with open(content_path, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False)

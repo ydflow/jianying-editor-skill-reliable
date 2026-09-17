@@ -1,0 +1,15 @@
+JianYing Editor Reliable
+
+This derivative work is based on:
+  luoluoluo22/jianying-editor-skill
+  https://github.com/luoluoluo22/jianying-editor-skill
+  Copyright (c) 2026 luoluoluo22
+  Licensed under the MIT License.
+
+The bundled and modified pyJianYingDraft component remains subject to the
+Apache License 2.0 attribution and modification notices included under
+scripts/vendor/pyJianYingDraft/LICENSE and scripts/vendor/README.md.
+
+Reliable Edition changes are documented in docs/OPTIMIZATIONS.md and the Git
+history. JianYing and CapCut are trademarks of their respective owners. This
+project is independent and is not endorsed by the JianYing or CapCut teams.

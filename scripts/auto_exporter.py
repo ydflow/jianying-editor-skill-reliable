@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 
+from doctor import detect_jianying_installation
 from utils.cli_protocol import emit_result, make_result
 from utils.env_setup import setup_env
 from utils.errors import UserInputError
@@ -14,7 +15,11 @@ import pyJianYingDraft as draft  # noqa: E402
 
 
 def auto_export(
-    draft_name: str, output_path: str, resolution: str = None, framerate: str = None
+    draft_name: str,
+    output_path: str,
+    resolution: str = None,
+    framerate: str = None,
+    force_unsupported_version: bool = False,
 ) -> tuple[int, dict]:
     if sys.platform != "win32":
         return 2, make_result(
@@ -25,6 +30,30 @@ def auto_export(
                 "draft": draft_name,
                 "output": output_path,
                 "platform": sys.platform,
+                "manual_export_required": True,
+            },
+        )
+
+    installation = detect_jianying_installation()
+    installed_version = installation.get("version") or ""
+    try:
+        major, minor = [int(part) for part in installed_version.split(".")[:2]]
+    except (TypeError, ValueError):
+        major, minor = None, None
+    known_stable = major is not None and (major < 5 or (major == 5 and (minor or 0) <= 9))
+    if major is not None and not known_stable and not force_unsupported_version:
+        return 2, make_result(
+            False,
+            "unsupported_jianying_version",
+            (
+                f"Detected JianYing {installed_version}. Automatic UI export is only verified "
+                "for JianYing 5.9 or earlier. Generate the draft and export manually, or pass "
+                "--force-unsupported-version to attempt at your own risk."
+            ),
+            {
+                "draft": draft_name,
+                "output": output_path,
+                "jianying_version": installed_version,
                 "manual_export_required": True,
             },
         )
@@ -88,6 +117,7 @@ def auto_export(
                 "output": output_path,
                 "resolution": resolution,
                 "fps": framerate,
+                "jianying_version": installed_version or None,
             },
         )
     except Exception as e:
@@ -108,9 +138,20 @@ def main() -> int:
     parser.add_argument("--res", help="Resolution: 480/720/1080/2K/4K/8K")
     parser.add_argument("--fps", help="Framerate: 24/25/30/50/60")
     parser.add_argument("--json", action="store_true", help="Output JSON summary")
+    parser.add_argument(
+        "--force-unsupported-version",
+        action="store_true",
+        help="Attempt UI export on an unverified JianYing version",
+    )
     args = parser.parse_args()
     try:
-        code, summary = auto_export(args.name, args.output, args.res, args.fps)
+        code, summary = auto_export(
+            args.name,
+            args.output,
+            args.res,
+            args.fps,
+            force_unsupported_version=args.force_unsupported_version,
+        )
     except UserInputError as e:
         logger.error(str(e))
         summary = make_result(

@@ -7,8 +7,8 @@ Task routing matrix for reliable execution.
 Use this fixed sequence:
 
 1. Environment check (minimal):
-   - verify Python works
-   - verify draft root exists
+   - run the read-only `scripts/doctor.py --json`
+   - do not create a diagnostic draft unless the user authorizes a smoke test
 2. Asset resolution:
    - use explicit local/cloud assets
    - only call `asset_search.py` when user asks for style/effect lookup
@@ -73,7 +73,8 @@ Use this fixed sequence:
 - Read: `rules/core.md`, `rules/cli.md`
 - Execute:
   - `scripts/auto_exporter.py`
-  - `scripts/api_validator.py --json`
+  - `scripts/doctor.py --json`
+  - `scripts/api_validator.py --smoke --json` only for an authorized write test
 - Required checks:
   - output file exists.
   - CLI return code and JSON contract are valid.

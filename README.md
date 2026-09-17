@@ -1,5 +1,19 @@
-# 剪映（jianying） Skill | AI 全自动用你的剪映替你剪辑
+# JianYing Editor Reliable | 剪映自动化 Skill 可靠增强版
 ![封面图](assets/cover.png)
+
+> 本项目是 [luoluoluo22/jianying-editor-skill](https://github.com/luoluoluo22/jianying-editor-skill) 的二次开源版本，保留原项目 Git 历史、MIT 许可证和内嵌 `pyJianYingDraft` 的 Apache-2.0 归属。本版聚焦“不误删、不伪装格式、版本可判断、失败可解释”，与剪映官方无关联。
+
+## Reliable Edition 新增
+
+- **安全覆盖**：`JyProject` 默认不再覆盖已有草稿；显式覆盖前自动移入时间戳备份。
+- **只读 Doctor**：新增 `scripts/doctor.py`，检查 Python、FFmpeg、依赖、Playwright、剪映版本和草稿路径，默认不写入草稿。
+- **导出预检**：检测到未验证的新版剪映时阻止 UI 自动导出，避免误操作。
+- **媒体保真**：视频标准化默认保留原始方向、尺寸和帧率；缓存不再写到 Skill 或素材目录。
+- **真实 MP4**：Playwright 录制的 WebM 输出为 `.mp4` 时使用 FFmpeg 真正转码，不再只改扩展名。
+- **Windows UTF-8**：统一处理 Agent 终端的 Unicode 输出，避免 Emoji 导致 GBK `UnicodeEncodeError`。
+- **双 Python CI**：Windows 上覆盖 Python 3.12/3.13，并扩大 lint/format 范围。
+
+完整设计与验收证据见 [docs/OPTIMIZATIONS.md](docs/OPTIMIZATIONS.md)。
 
 ### [B 站介绍](https://www.bilibili.com/video/BV1hLzCBzEDS/?vd_source=0eaa8407ec8edd1e9f2a0abf6e126bf6)
 
@@ -49,35 +63,30 @@
 ## 🚀 快速开始 (Quick Start)
 
 ### 1. 安装 Skill (Install)
-建议优先使用 Windows 一键脚本，它会自动处理代码下载、目录结构和所有 Python 库。
 
-**🔥 Windows 用户一键安装:**
-在 PowerShell 中运行：
-```powershell
-irm is.gd/rpb65M | iex
-```
+为了便于审核安装来源，Reliable Edition 只提供透明的 Git Clone 安装方式，不提供短链接远程 PowerShell 执行命令。
 
 **手动安装 (Git Clone):**
 
 **🤖 Antigravity / Gemini Code Assist:**
 ```bash
-git clone https://github.com/luoluoluo22/jianying-editor-skill.git .agent/skills/jianying-editor
+git clone https://github.com/ydflow/jianying-editor-skill-reliable.git .agent/skills/jianying-editor-reliable
 ```
 
 **🚀 Trae IDE:**
 ```bash
-git clone https://github.com/luoluoluo22/jianying-editor-skill.git .trae/skills/jianying-editor
+git clone https://github.com/ydflow/jianying-editor-skill-reliable.git .trae/skills/jianying-editor-reliable
 ```
 
 **🧠 Claude Code:**
 ```bash
-git clone https://github.com/luoluoluo22/jianying-editor-skill.git .claude/skills/jianying-editor
+git clone https://github.com/ydflow/jianying-editor-skill-reliable.git .claude/skills/jianying-editor-reliable
 ```
 
 **💻 Cursor / VSCode / 通用:**
 ```bash
 # 通用方式：安装到根目录 include 列表
-git clone https://github.com/luoluoluo22/jianying-editor-skill.git skills/jianying-editor
+git clone https://github.com/ydflow/jianying-editor-skill-reliable.git skills/jianying-editor-reliable
 ```
 
 ### 3. 🛠️ 版本准备 (Essential Resources)
@@ -163,7 +172,7 @@ Skill 默认会自动探测您的剪映安装位置，如果探测失败，请�
 当有新功能发布时，您可以输入以下命令一键更新：
 
 ```bash
-cd .agent/skills/jianying-editor
+cd .agent/skills/jianying-editor-reliable
 git pull
 ```
 

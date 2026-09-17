@@ -132,7 +132,25 @@ def main() -> int:
         "--strict", action="store_true", help="Fail if ffprobe or test asset is missing"
     )
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON summary")
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Create a temporary diagnostic draft. Without this flag the command is read-only.",
+    )
     args = parser.parse_args()
+    if not args.smoke:
+        from doctor import collect_diagnostics
+
+        summary = collect_diagnostics(drafts_root=os.getenv("JY_PROJECTS_ROOT") or None)
+        if args.json:
+            emit_result(summary, True)
+        else:
+            logger.info("Read-only environment check: %s", summary.get("code"))
+            logger.info("Drafts root: %s", summary.get("drafts_root"))
+            logger.info("JianYing: %s", summary.get("jianying"))
+            warnings = summary.get("warnings") or []
+            logger.info("Warnings: %s", ", ".join(warnings) or "none")
+        return 0 if summary.get("ok") else 1
     code, summary = run_diagnostic(args.project, args.video, strict=args.strict)
     emit_result(summary, args.json)
     return code

@@ -332,7 +332,9 @@ class CloudManager:
                             continue
                         total += len(chunk)
                         if total > MAX_DOWNLOAD_BYTES:
-                            raise ValueError(f"Download exceeds size limit: {MAX_DOWNLOAD_BYTES} bytes")
+                            raise ValueError(
+                                f"Download exceeds size limit: {MAX_DOWNLOAD_BYTES} bytes"
+                            )
                         f.write(chunk)
                 os.replace(tmp_path, local_path)
                 logger.info("Download finished: %s", local_path)

@@ -9,7 +9,7 @@
 当你第一次加载这个 Skill 时，可以先用以下指令测试环境：
 
 - **"检查一下剪映自动化的环境是否正常"**
-  - AI 会运行 `api_validator.py` 并检查 FFmpeg、Python 依赖以及剪映草稿路径。
+  - AI 会运行只读的 `doctor.py` 并检查 FFmpeg、Python 依赖、剪映版本以及草稿路径。
 - **"随便剪一个测试视频给我看看"**
   - AI 会创建一个名为 "Skill Test" 的草稿，添加一段演示素材和测试字幕。
 
@@ -79,7 +79,7 @@
 - **"帮我列出最近 10 个剪映草稿，看看都有什么项目"**
   - AI 会运行 `draft_inspector.py list --limit 10`。
 - **"我的草稿'未命名项目'好像坏了，打不开，帮我修复一下"**
-  - AI 会使用 `JyProject(name, overwrite=True)` 触发 Auto-healing 机制重新生成合规的 `draft_info.json`。
+  - AI 会先使用 `draft_inspector.py` 做只读检查；如确需重建，使用 `JyProject(name, overwrite=True)` 前会自动备份原草稿并报告备份路径。
 - **"把'最终版视频'这个项目导出成 4K 60帧的 MP4，保存到桌面"**
   - Windows 下 AI 会调用 `auto_exporter.py` 进行无头导出；macOS 下会生成草稿并提示你在剪映中手动导出。
 

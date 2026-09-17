@@ -1,7 +1,6 @@
 import hashlib
 import os
 import shutil
-import sys
 from typing import Union
 
 import pyJianYingDraft as draft
@@ -219,7 +218,9 @@ class MediaOpsMixin:
         # 并不存在，会直接触发剪映“检测到媒体丢失”。下载失败时直接报错返回。
         local_path = self.cloud_manager.download_asset(query)
         if not local_path or not os.path.exists(local_path):
-            print(f"❌ Cloud music download failed: '{query}'. Aborted to avoid media-missing error.")
+            print(
+                f"❌ Cloud music download failed: '{query}'. Aborted to avoid media-missing error."
+            )
             return None
 
         return self.add_audio_safe(

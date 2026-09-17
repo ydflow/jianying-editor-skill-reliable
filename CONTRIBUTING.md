@@ -10,16 +10,16 @@
 
 ```bash
 pip install -r requirements.txt
-pip install pytest ruff black pre-commit
+pip install ruff black pre-commit
 pre-commit install
 ```
 
 ## Required Checks
 
 ```bash
-ruff check scripts tests tools
-black --check scripts tests tools
-python -m pytest tests/test_wrapper.py -q
+ruff check scripts tests tools --exclude scripts/vendor
+black --check scripts tests tools --exclude "scripts/vendor"
+python -m unittest discover -s tests -p "test_*.py" -v
 python tools/check_repo_hygiene.py
 python tools/validate_data_schema.py
 ```
@@ -33,5 +33,6 @@ python tools/validate_data_schema.py
 ## Pull Request Rules
 
 - Describe user impact and migration risk.
+- State whether draft files, media files, cache files, or UI automation can be changed.
 - Add concrete verification steps.
 - Include before/after behavior for API-affecting changes.

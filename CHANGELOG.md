@@ -1,4 +1,16 @@
 # Changelog
+
+## v1.8.0-reliable.1 - 2026-09-17
+
+- Existing drafts are loaded by default instead of replaced.
+- Explicit replacement creates a timestamped backup before recreating the draft.
+- Added a read-only environment doctor and made draft-writing diagnostics opt-in.
+- Added installed-version preflight for Windows UI auto export.
+- Preserved source geometry and frame rate during compatibility normalization.
+- Moved generated media cache out of the Skill and source-media directories.
+- Fixed Playwright WebM-to-MP4 output to perform a real FFmpeg conversion.
+- Added UTF-8 console configuration and Reliable Edition regression tests.
+- Expanded Windows CI to Python 3.12 and 3.13 with broader source checks.
  
 ## v1.7.0 - 2026-09-11
 - **Draft Self-containment & Media Missing Fix** (Contributed by @shaozheliu, #23):

@@ -37,7 +37,15 @@ class TextOpsMixin:
         anim_loop_duration = kwargs.pop("anim_loop_duration", None)
 
         # 仅透传 TextSegment 支持的字段
-        allowed_keys = {"font", "style", "clip_settings", "border", "background", "shadow", "rich_spans"}
+        allowed_keys = {
+            "font",
+            "style",
+            "clip_settings",
+            "border",
+            "background",
+            "shadow",
+            "rich_spans",
+        }
         text_kwargs = {k: v for k, v in kwargs.items() if k in allowed_keys}
         # 统一默认字幕样式：字号 5 + 黑色描边
         if "style" not in text_kwargs:

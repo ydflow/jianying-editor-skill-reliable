@@ -8,18 +8,18 @@ def _build_candidates(start_dir: str) -> List[str]:
     """
     cwd = os.getcwd()
     parents = [start_dir, os.path.join(start_dir, ".."), os.path.join(start_dir, "..", "..")]
-    editor_paths = [
-        os.path.join(start_dir, ".agents", "skills", "jianying-editor"),
-        os.path.join(start_dir, ".agent", "skills", "jianying-editor"),
-        os.path.join(start_dir, ".trae", "skills", "jianying-editor"),
-        os.path.join(start_dir, ".claude", "skills", "jianying-editor"),
-        os.path.join(start_dir, "skills", "jianying-editor"),
-        os.path.join(cwd, ".agents", "skills", "jianying-editor"),
-        os.path.join(cwd, ".agent", "skills", "jianying-editor"),
-        os.path.join(cwd, ".trae", "skills", "jianying-editor"),
-        os.path.join(cwd, ".claude", "skills", "jianying-editor"),
-        os.path.join(cwd, "skills", "jianying-editor"),
-    ]
+    editor_paths = []
+    for base in (start_dir, cwd):
+        for skill_name in ("jianying-editor-reliable", "jianying-editor"):
+            editor_paths.extend(
+                [
+                    os.path.join(base, ".agents", "skills", skill_name),
+                    os.path.join(base, ".agent", "skills", skill_name),
+                    os.path.join(base, ".trae", "skills", skill_name),
+                    os.path.join(base, ".claude", "skills", skill_name),
+                    os.path.join(base, "skills", skill_name),
+                ]
+            )
     return parents + editor_paths
 
 

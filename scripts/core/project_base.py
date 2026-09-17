@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import time
+from datetime import datetime
 
 import pyJianYingDraft as draft
 from utils.formatters import get_default_drafts_root
@@ -21,15 +22,21 @@ class JyProjectBase:
         width: int = 1920,
         height: int = 1080,
         drafts_root: str = None,
-        overwrite: bool = True,
+        overwrite: bool = False,
+        backup_on_overwrite: bool = True,
+        backup_root: str = None,
         script_instance=None,
     ):
         self.root = os.path.abspath(drafts_root or get_default_drafts_root())
         if not os.path.exists(self.root):
-            try:
-                os.makedirs(self.root)
-            except Exception:
-                pass
+            os.makedirs(self.root, exist_ok=True)
+
+        default_backup_root = os.path.join(os.path.dirname(self.root), ".jianying-editor-backups")
+        self.backup_root = os.path.abspath(
+            backup_root or os.getenv("JY_BACKUP_ROOT", "").strip() or default_backup_root
+        )
+        self.backup_on_overwrite = bool(backup_on_overwrite)
+        self.last_backup_path = None
 
         print(f"Project Root: {self.root}")
 
@@ -55,17 +62,19 @@ class JyProjectBase:
             content_path = os.path.join(draft_path, "draft_info.json")
             if not os.path.exists(content_path):
                 content_path = os.path.join(draft_path, "draft_content.json")
-                
+
             meta_path = os.path.join(draft_path, "draft_meta_info.json")
             if not os.path.exists(content_path) or not os.path.exists(meta_path):
                 if overwrite:
                     print(f"Corrupted draft detected (missing json): {self.name}")
-                    print("Auto-healing: Removing corrupted folder...")
+                    print("Safe recovery: preserving the original folder before recreation...")
                     try:
-                        self._safe_remove_dir(draft_path)
+                        self.last_backup_path = self._preserve_existing_draft(draft_path)
                         has_draft = False
                     except Exception as e:
-                        print(f"Failed to cleanup corrupted draft: {e}")
+                        raise RuntimeError(
+                            f"Refusing to recreate draft because backup failed: {e}"
+                        ) from e
                 else:
                     print(
                         f"Corrupted draft detected: {self.name} (missing json). "
@@ -77,9 +86,15 @@ class JyProjectBase:
             try:
                 self.script = self.df.load_template(self.name)
             except Exception as e:
-                print(f"Load failed ({e}), forcing recreate...")
-                self.script = self.df.create_draft(self.name, width, height, allow_replace=True)
+                raise RuntimeError(
+                    f"Existing draft could not be loaded and was left untouched: {e}. "
+                    "Use overwrite=True only after reviewing the draft and backup location."
+                ) from e
         else:
+            if has_draft and overwrite:
+                draft_path = self._safe_join_root(self.name)
+                self.last_backup_path = self._preserve_existing_draft(draft_path)
+                has_draft = False
             print(f"Creating new project: {self.name}")
             max_retries = 3
             for attempt in range(max_retries):
@@ -220,3 +235,23 @@ class JyProjectBase:
         if os.path.commonpath([self.root, abs_path]) != self.root:
             raise ValueError(f"Refuse to remove path outside root: {abs_path}")
         shutil.rmtree(abs_path, ignore_errors=True)
+
+    def _preserve_existing_draft(self, draft_path: str) -> str:
+        """Move an existing draft to a timestamped backup before replacement."""
+        abs_path = os.path.abspath(draft_path)
+        if os.path.commonpath([self.root, abs_path]) != self.root:
+            raise ValueError(f"Refuse to back up path outside drafts root: {abs_path}")
+        if not os.path.isdir(abs_path):
+            raise FileNotFoundError(abs_path)
+        if not self.backup_on_overwrite:
+            raise RuntimeError(
+                "Replacing an existing draft without a backup is disabled. "
+                "Set backup_on_overwrite=True."
+            )
+
+        os.makedirs(self.backup_root, exist_ok=True)
+        stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        target = os.path.join(self.backup_root, f"{self.name}-{stamp}")
+        shutil.move(abs_path, target)
+        print(f"Backup created: {target}")
+        return target

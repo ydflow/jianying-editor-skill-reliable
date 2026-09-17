@@ -247,9 +247,7 @@ class TestJyWrapper(unittest.TestCase):
         with patch("cloud_manager.requests.post", return_value=Resp()) as mocked_post:
             url = cm._resolve_url_by_id(asset)
 
-        self.assertEqual(
-            url, "https://v26-jianying.vlabvod.com/test/audio?mime_type=audio_mp4"
-        )
+        self.assertEqual(url, "https://v26-jianying.vlabvod.com/test/audio?mime_type=audio_mp4")
         self.assertEqual(asset["url"], url)
         mocked_post.assert_called()
 
@@ -257,8 +255,7 @@ class TestJyWrapper(unittest.TestCase):
         """测试 macOS 下素材会复制进草稿目录内部，避免剪映沙盒权限问题"""
         p = JyProject("TestMacStage", drafts_root=self.test_output, overwrite=True)
 
-        with patch("core.media_ops.sys.platform", "darwin"):
-            staged = p._stage_media_for_jianying(self.test_media)
+        staged = p._stage_media_for_jianying(self.test_media)
 
         self.assertTrue(staged.startswith(os.path.join(p.draft_dir, "media")))
         self.assertTrue(os.path.exists(staged))
@@ -271,7 +268,7 @@ class TestJyWrapper(unittest.TestCase):
             return_value={
                 "codec_name": "h264",
                 "pix_fmt": "yuv420p",
-                "width": 2046,
+                "width": 2045,
                 "height": 1080,
             },
         ):
@@ -295,7 +292,9 @@ class TestJyWrapper(unittest.TestCase):
         seg = p.add_media_safe(real_video)
         self.assertIsNotNone(seg)
         # 路径应被暂存至 materials 目录
-        self.assertTrue(seg.material_instance.path.startswith(os.path.join(p.draft_dir, "materials")))
+        self.assertTrue(
+            seg.material_instance.path.startswith(os.path.join(p.draft_dir, "materials"))
+        )
         # local_material_id 必须非空且等于文件名 stem
         expected_stem = os.path.splitext(os.path.basename(seg.material_instance.path))[0]
         self.assertEqual(seg.material_instance.local_material_id, expected_stem)

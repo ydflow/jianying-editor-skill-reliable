@@ -8,6 +8,11 @@ on:
 jobs:
   test:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+    env:
+      PYTHONUTF8: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,7 +20,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
@@ -25,20 +30,7 @@ jobs:
 
       - name: Lint
         run: |
-          ruff check `
-            scripts/api_validator.py `
-            scripts/asset_search.py `
-            scripts/auto_exporter.py `
-            scripts/build_cloud_music_library.py `
-            scripts/cloud_manager.py `
-            scripts/universal_tts.py `
-            scripts/utils/cli_protocol.py `
-            scripts/utils/config.py `
-            scripts/utils/errors.py `
-            scripts/utils/logging_utils.py `
-            tests/test_wrapper.py `
-            tools/check_repo_hygiene.py `
-            tools/validate_data_schema.py
+          ruff check scripts tests tools --exclude scripts/vendor
 
       - name: Run unit tests
         run: |
@@ -47,20 +39,7 @@ jobs:
 
       - name: Format check
         run: |
-          black --check `
-            scripts/api_validator.py `
-            scripts/asset_search.py `
-            scripts/auto_exporter.py `
-            scripts/build_cloud_music_library.py `
-            scripts/cloud_manager.py `
-            scripts/universal_tts.py `
-            scripts/utils/cli_protocol.py `
-            scripts/utils/config.py `
-            scripts/utils/errors.py `
-            scripts/utils/logging_utils.py `
-            tests/test_wrapper.py `
-            tools/check_repo_hygiene.py `
-            tools/validate_data_schema.py
+          black --check scripts tests tools --exclude "scripts/vendor"
 
       - name: Repo hygiene
         run: |

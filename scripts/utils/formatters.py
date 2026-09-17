@@ -21,6 +21,7 @@ def find_draft_content_path(draft_path: str) -> Optional[str]:
 def get_default_drafts_root() -> str:
     """自动探测剪映草稿目录 (Windows / macOS 跨平台)"""
     import sys as _sys
+
     from utils.config import CONFIG
 
     if CONFIG.projects_root_override:

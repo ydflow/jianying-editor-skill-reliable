@@ -34,7 +34,9 @@ Notes:
 ## 2) Diagnostics
 
 ```bash
-python <SKILL_ROOT>/scripts/api_validator.py --json
+python <SKILL_ROOT>/scripts/doctor.py --json
+# Explicit write test only:
+python <SKILL_ROOT>/scripts/api_validator.py --smoke --json
 ```
 
 ## 3) Asset Search

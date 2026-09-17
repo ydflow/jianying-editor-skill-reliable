@@ -1,27 +1,17 @@
-## Summary
+## What changed
 
-- What changed?
-- Why is this needed?
+Describe the user-visible change and why it is needed.
 
-## Scope
+## Safety boundary
 
-- Affected modules/files:
-- Breaking changes: yes/no
+- [ ] Existing drafts are not replaced without an explicit request and backup.
+- [ ] Diagnostics remain read-only unless a write test is explicitly selected.
+- [ ] No tokens, cookies, private media, local draft data, or runtime caches are included.
+- [ ] Upstream and vendored-license notices remain intact.
 
-## Validation
+## Verification
 
-- [ ] `ruff check scripts tests tools`
-- [ ] `black --check scripts tests tools`
-- [ ] `python -m pytest tests/test_wrapper.py -q`
+- [ ] `python -m unittest discover -s tests -p "test_*.py" -v`
 - [ ] `python tools/check_repo_hygiene.py`
 - [ ] `python tools/validate_data_schema.py`
-
-## Risk and Rollback
-
-- Risk level:
-- Rollback plan:
-
-## Checklist
-
-- [ ] Docs updated (`SKILL.md` / `rules/` / `docs/api.md`) if API/behavior changed
-- [ ] No runtime artifacts committed
+- [ ] Relevant manual JianYing/device/export checks are stated separately.
