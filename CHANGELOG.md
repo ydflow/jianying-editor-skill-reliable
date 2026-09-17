@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.8.0-reliable.1 - 2026-09-17
+## v1.8.0-reliable.2 - 2026-09-17
 
 - Existing drafts are loaded by default instead of replaced.
 - Explicit replacement creates a timestamped backup before recreating the draft.
@@ -11,6 +11,7 @@
 - Fixed Playwright WebM-to-MP4 output to perform a real FFmpeg conversion.
 - Added UTF-8 console configuration and Reliable Edition regression tests.
 - Expanded Windows CI to Python 3.12 and 3.13 with broader source checks.
+- Gracefully skip optional media probing when `ffprobe` is unavailable.
  
 ## v1.7.0 - 2026-09-11
 - **Draft Self-containment & Media Missing Fix** (Contributed by @shaozheliu, #23):

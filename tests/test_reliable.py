@@ -15,7 +15,7 @@ for path in (str(SCRIPTS), str(VENDOR)):
 from auto_exporter import auto_export
 from doctor import _detect_playwright_browser, collect_diagnostics
 from jy_wrapper import JyProject
-from utils.media_normalizer import _norm_output_path
+from utils.media_normalizer import _norm_output_path, should_normalize_video_for_jianying
 
 
 class TestReliableEdition(unittest.TestCase):
@@ -91,6 +91,10 @@ class TestReliableEdition(unittest.TestCase):
 
             self.assertTrue(os.path.commonpath([cache_dir, output]) == cache_dir)
             self.assertFalse(os.path.commonpath([source_dir, output]) == source_dir)
+
+    @patch("utils.media_normalizer.subprocess.run", side_effect=FileNotFoundError)
+    def test_missing_ffprobe_degrades_without_crashing(self, _mock_run):
+        self.assertFalse(should_normalize_video_for_jianying("clip.mp4"))
 
 
 if __name__ == "__main__":

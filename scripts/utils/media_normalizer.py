@@ -61,7 +61,10 @@ def _probe_video(input_path: str) -> dict:
         "json",
         input_path,
     ]
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    except FileNotFoundError:
+        return {}
     if proc.returncode != 0:
         return {}
     try:
