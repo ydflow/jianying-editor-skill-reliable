@@ -1,6 +1,11 @@
 # JianYing Editor Reliable | 剪映自动化 Skill 可靠增强版
 ![封面图](assets/cover.png)
 
+[![Release](https://img.shields.io/github/v/release/ydflow/jianying-editor-skill-reliable)](https://github.com/ydflow/jianying-editor-skill-reliable/releases/latest)
+[![CI](https://github.com/ydflow/jianying-editor-skill-reliable/actions/workflows/ci.yml/badge.svg)](https://github.com/ydflow/jianying-editor-skill-reliable/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB.svg)](https://www.python.org/)
+
 > 本项目是 [luoluoluo22/jianying-editor-skill](https://github.com/luoluoluo22/jianying-editor-skill) 的二次开源版本，保留原项目 Git 历史、MIT 许可证和内嵌 `pyJianYingDraft` 的 Apache-2.0 归属。本版聚焦“不误删、不伪装格式、版本可判断、失败可解释”，与剪映官方无关联。
 
 ## Reliable Edition 新增
@@ -15,7 +20,7 @@
 
 完整设计与验收证据见 [docs/OPTIMIZATIONS.md](docs/OPTIMIZATIONS.md)。
 
-### [B 站介绍](https://www.bilibili.com/video/BV1hLzCBzEDS/?vd_source=0eaa8407ec8edd1e9f2a0abf6e126bf6)
+### [上游项目 B 站介绍](https://www.bilibili.com/video/BV1hLzCBzEDS/)
 
 这是一个能实现自动剪辑的 skill 项目。剪辑师只需用自然语言告诉 AI 你想做什么视频，它就能帮你完成从**写文案、配音、加字幕、选音乐、上特效到最终导出**的整套流程。
 
@@ -180,6 +185,8 @@ git pull
 
 最新版本请直接查看 [CHANGELOG.md](CHANGELOG.md) 与 [VERSION](VERSION)。
 
+> 以下为上游历史版本记录，用于保留项目来源与贡献归属；其中的历史宣传描述不作为 Reliable Edition 的现行兼容性承诺。
+
 ### v1.7 (2026-09-11) - 剪映 5.9+ 媒体丢失彻底修复 & macOS 沙盒与素材自包含增强
 - **草稿素材自包含与媒体丢失彻底修复** (感谢 @shaozheliu):
   - 修复剪映 Pro 5.9+ 导入素材后报“检测到媒体丢失，请重新链接后再剪辑”问题。
@@ -223,18 +230,6 @@ git pull
   - 集成 **Playwright 智能录屏引擎**，支持自动等待动画结束信号 (`window.animationFinished`)，产出高清无损素材。
   - 真正实现“代码即特效”，让前端动效库（如 Three.js, GSAP, Lottie）成为你的剪接素材库。
 
-## 🌟 核心特性 (V3 进化版)
-
-- **顶级素材接入**:
-  - **banana (Imagen 3)**: 正式接入，支持一行指令生成 4K 电影级神兽/场景贴纸。
-  - **Grok 3 (Media)**: 视觉天花板级图生视频，让你的静态素材瞬间化身史诗大片。
-- **多轨管理**：支持视频、音频、字幕、贴纸、特效无限叠加，像专业剪辑师一样操作。
-- **全自动闭环**: 从 Claude 4.5 剧本创作到素材生成，再到剪映草稿合成，一键全自动。
-- **智能变焦**: 独家的 Smart Zoom 功能，能把普通的录屏自动变成“带镜头感”的演示视频。
-- **工程自修复**: 强大的 `Auto-healing` 机制，自动识别并修复由于版本冲突或异常关闭导致的损坏草稿。
-- **网页转视频 (Web-to-Video)**: 完美支持 Canvas/JS 动效实时捕捉，让 Web 的无限创意瞬间化身视频 VFX 素材。
-- **自动导出**：内置自动化脚本，支持一键导出 1080P/4K 视频，彻底解放双手。
-
 ### v1.2 (2026-01-27) - 像变魔术一样！
 - **✨ 智能变焦 (Smart Zoom)**:
   - 录制的教程视频太平淡？现在，它会自动帮你把镜头**推进特写**到鼠标点击的地方，就像电影镜头一样酷！
@@ -251,6 +246,8 @@ git pull
 
 感谢所有为本项目做出贡献的开发者！每一份代码、Issue 与改进建议都让这个项目更加健全稳定。
 
+Reliable Edition 由 [@ydflow](https://github.com/ydflow) 维护；下方保留上游作者与贡献者归属。
+
 <table>
   <tr>
     <td align="center">
@@ -258,7 +255,7 @@ git pull
         <img src="https://github.com/luoluoluo22.png" width="80px;" alt="luoluoluo22"/><br />
         <sub><b>luoluoluo22</b></sub>
       </a><br />
-      <sub>项目作者 / Maintainer</sub>
+      <sub>上游项目作者</sub>
     </td>
     <td align="center">
       <a href="https://github.com/twodogegg">
@@ -280,25 +277,6 @@ git pull
         <sub><b>Maxinsomnia</b></sub>
       </a><br />
       <sub>macOS 剪映 5.9+ 架构执行支持 (#15)</sub>
-    </td>
-  </tr>
-</table>
-
----
-
-## 打赏支持
-
-如果这个项目对你有帮助，欢迎打赏支持。你的支持会直接转化为继续开发和维护的动力。如有任何疑问或改进建议，欢迎提交 GitHub Issue。
-
-<table>
-  <tr>
-    <td align="center">
-      <strong>支付宝</strong><br>
-      <img src="docs/images/donate/alipay.jpg" alt="支付宝收款码" width="280">
-    </td>
-    <td align="center">
-      <strong>微信</strong><br>
-      <img src="docs/images/donate/wechat.png" alt="微信收款码" width="280">
     </td>
   </tr>
 </table>

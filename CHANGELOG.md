@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.8.0-reliable.2 - 2026-09-17
+## v1.8.0-reliable.3 - 2026-09-17
 
 - Existing drafts are loaded by default instead of replaced.
 - Explicit replacement creates a timestamped backup before recreating the draft.
@@ -12,6 +12,8 @@
 - Added UTF-8 console configuration and Reliable Edition regression tests.
 - Expanded Windows CI to Python 3.12 and 3.13 with broader source checks.
 - Gracefully skip optional media probing when `ffprobe` is unavailable.
+- Removed donation QR codes and stale upstream branding from the public landing materials.
+- Refined the homepage around verifiable Reliable Edition capabilities and boundaries.
  
 ## v1.7.0 - 2026-09-11
 - **Draft Self-containment & Media Missing Fix** (Contributed by @shaozheliu, #23):

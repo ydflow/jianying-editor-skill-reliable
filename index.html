@@ -27,8 +27,7 @@
         .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.5rem; background: rgba(255,255,255,0.1); border-radius: 0.5rem; opacity: 0; transition: all 0.2s; color: #94a3b8; z-index: 10; }
         .code-block-wrapper:hover .copy-btn { opacity: 1; }
         .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
-        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal { opacity: 1; transform: none; }
         .sidebar-link.active { border-left-color: #FFD100; color: #FFD100; font-weight: 600; }
         .prompt-card { background: white; border: 1px solid #f1f5f9; padding: 1.5rem; border-radius: 1rem; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
         .dark .prompt-card { background: #1a1a1a; border-color: #262626; }
@@ -70,7 +69,7 @@
     <aside class="hidden lg:flex fixed left-0 top-0 h-screen w-64 flex-col border-r border-slate-200 dark:border-zinc-800 p-8 pt-24 z-40 bg-slate-50 dark:bg-[#0A0A0A]">
         <div class="mb-12">
             <h1 class="text-xl font-bold tracking-tighter">JY EDITOR <span class="text-[#FFD100]">SKILL</span></h1>
-            <p class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Antigravity Skill v1.3</p>
+            <p class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">v1.8.0-reliable.3</p>
         </div>
         <nav class="space-y-4 text-sm text-slate-500 dark:text-zinc-500">
             <a href="#introduction" class="sidebar-link block border-l-2 border-transparent pl-4 hover:text-slate-900 dark:hover:text-white transition-all">项目简介</a>
@@ -93,7 +92,7 @@
 
         <nav class="fixed top-0 right-0 left-0 lg:left-64 h-20 px-8 flex justify-between items-center z-50 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800">
             <div class="flex items-center space-x-4">
-                <a href="https://www.bilibili.com/video/BV1hLzCBzEDS/" target="_blank" class="text-[10px] font-bold uppercase tracking-widest px-4 py-2 bg-red-500 text-white rounded-full">B 站教程</a>
+                <a href="https://www.bilibili.com/video/BV1hLzCBzEDS/" target="_blank" class="text-[10px] font-bold uppercase tracking-widest px-4 py-2 bg-red-500 text-white rounded-full">上游项目介绍</a>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="https://github.com/ydflow/jianying-editor-skill-reliable" target="_blank" class="p-2 text-slate-500 hover:text-[#FFD100] transition-colors">
@@ -109,7 +108,7 @@
         <section id="introduction" class="reveal active py-12">
             <h2 class="text-6xl font-bold tracking-tight mb-6 leading-tight">JianYing Editor <br><span class="italic font-serif text-[#FFD100]">Skill for AI</span></h2>
             <p class="text-xl text-slate-500 dark:text-zinc-400 mb-12 max-w-2xl leading-relaxed">
-                赋予 AI “手眼”，使其能通过 Python 代码全自动生成、编辑和导出剪映视频草稿。不仅支持基础剪辑，更支持网页动效生成 (Web-to-Video) 和生成式 VFX。
+                面向 AI Agent 的剪映草稿自动化 Skill，通过 Python 封装素材、字幕、配音、转场与 Web-to-Video 工作流。Reliable Edition 重点增强草稿安全、环境诊断、媒体保真和版本预检。
             </p>
         </section>
 
@@ -153,7 +152,7 @@
                         </div>
                     </div>
                     <h4 class="mt-4 font-bold">AI 思考</h4>
-                    <p class="text-[10px] text-slate-500 text-center mt-1">Claude / Antigravity<br>生成指令流</p>
+                    <p class="text-[10px] text-slate-500 text-center mt-1">Agent / Coding Assistant<br>生成结构化指令</p>
                 </div>
 
                 <!-- Mobile Arrow 1-2 -->
@@ -201,13 +200,13 @@
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     </div>
                     <h4 class="mt-4 font-bold">剪映软件</h4>
-                    <p class="text-[10px] text-slate-500 text-center mt-1">自动识别工程<br>专业级精细控制</p>
+                    <p class="text-[10px] text-slate-500 text-center mt-1">加载草稿工程<br>人工预览与导出</p>
                 </div>
             </div>
 
             <div class="mt-20 p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-3xl border border-slate-200 dark:border-zinc-800 text-center">
                 <p class="text-slate-600 dark:text-zinc-400 text-sm leading-relaxed max-w-3xl mx-auto">
-                    这套方案的核心在于 <b>“文件注入驱动”</b>。AI 不需要直接操作鼠标点击，而是直接操作剪映底层的草稿数据。这不仅绕过了软件交互的延迟，更实现了对时间轴、素材坐标、滤镜参数的 <b>100% 精确控制</b>。
+                    这套方案的核心是 <b>“结构化草稿生成”</b>。AI 通过封装接口组装时间轴、素材坐标和效果参数，实现草稿数据的 <b>100% 精确控制</b>；剪映负责最终解析与渲染。新版 UI 自动导出属于需要额外验证的可选能力。
                 </p>
             </div>
         </section>
@@ -323,7 +322,7 @@
         </section>
 
         <footer class="py-20 border-t border-slate-100 dark:border-zinc-900 text-center opacity-40">
-            <p class="text-[9px] uppercase tracking-[0.6em]">© 2026 ELYSIAN x JIANYING SKILL / POWERED BY ANTIGRAVITY</p>
+            <p class="text-[9px] uppercase tracking-[0.6em]">JianYing Editor Reliable / Community Derivative</p>
         </footer>
 
     </main>
@@ -352,13 +351,6 @@
                 if (link.getAttribute('href').includes(current)) link.classList.add('active');
             });
         });
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         function copyText(text, btn) {
             navigator.clipboard.writeText(text);
