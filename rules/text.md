@@ -68,6 +68,19 @@ project.add_styled_text(
 - **User says "add flower text / 花字 / styled text / decorative title"** -> Use `add_styled_text()`.
 - **User says "add text with effect"** -> Ask if they mean animation (use `anim_in` in `add_text_simple`) or visual style (use `add_styled_text`).
 
+### Current Hot Templates
+
+“热门” is a UI feed, not a stable local asset type. When a user asks for it,
+inspect the currently visible **文本 > 文字模板 > 热门** candidates first. Record the
+title, whether it is currently downloadable, and an ID only if JianYing or a
+saved draft exposes one. The default operating assumption is that the user has
+an active JianYing membership, so membership templates are eligible. Do not
+present `cloud_text_styles.csv` as the current hot list.
+
+Use a cached `add_styled_text()` effect only after its local resource folder is
+present. A template with multiple editable text fields must be captured from a
+real draft and verified before automating text replacement.
+
 ### Adding New Flower Text Styles
 To add more styles:
 1. In Jianying, add the desired 花字 to any draft project.

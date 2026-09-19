@@ -114,6 +114,40 @@ class TextOpsMixin:
         kwargs["rich_spans"] = spans
         return self.add_text_simple(text, start_time, duration, track_name, **kwargs)
 
+    def add_styled_text(
+        self,
+        text: str,
+        style_id: str,
+        start_time: Union[str, int] = None,
+        duration: Union[str, int] = "3s",
+        track_name: str = "StyledText",
+        **kwargs,
+    ):
+        """Add text with a locally cached JianYing flower-text effect.
+
+        ``style_id`` must be present in ``assets/artistEffect``.  This method
+        does not claim that an arbitrary current UI template can be recreated:
+        multi-text templates must first be captured and verified as a draft
+        template.
+        """
+        skill_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        effect_root = os.path.join(skill_root, "assets", "artistEffect", str(style_id))
+        if not os.path.isdir(effect_root):
+            raise ValueError(
+                f"Styled-text resource is unavailable locally: {style_id}. "
+                "Add and cache the style in JianYing before using it."
+            )
+        segment = self.add_text_simple(text, start_time, duration, track_name, **kwargs)
+        if segment is not None:
+            # pyJianYingDraft's TextEffect object is not a serializable material
+            # in current draft_info.json. Store a post-save patch keyed by the
+            # real text material ID instead of attaching that incompatible object.
+            self._cloud_text_patches[segment.material_id] = {
+                "id": str(style_id),
+                "path": effect_root.replace("\\", "/"),
+            }
+        return segment
+
     def set_subtitle_keywords(self, keywords_config: dict):
         """设置字幕关键词高亮配置，注入 draft_info.json 的 config 节点"""
         self.script.subtitle_keywords_config = keywords_config

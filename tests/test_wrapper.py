@@ -1,5 +1,6 @@
 # ruff: noqa: E402
 
+import json
 import os
 import shutil
 import sys
@@ -20,6 +21,11 @@ from cloud_manager import CloudManager
 from core.mocking_ops import MockAudioMaterial, MockVideoMaterial
 from draft_inspector import cmd_summary
 from jy_wrapper import JyProject, draft
+from native_asset_selection import (
+    load_local_text_style_candidates,
+    rank_candidates,
+    validate_ui_candidates,
+)
 from utils.formatters import safe_tim
 from utils.media_normalizer import should_normalize_video_for_jianying
 
@@ -310,6 +316,48 @@ class TestJyWrapper(unittest.TestCase):
             tracks = [t for t in p.script.tracks if t.type == draft.TrackType.audio]
             for t in tracks:
                 self.assertEqual(len(t.segments), 0)
+
+    def test_20_styled_text_requires_cached_style_and_attaches_effect(self):
+        """花字 API 只允许使用本地实际存在的效果资源。"""
+        styles = load_local_text_style_candidates()
+        self.assertTrue(styles)
+        p = JyProject("TestStyledText", drafts_root=self.test_output, overwrite=True)
+        segment = p.add_styled_text("热门标题", styles[0]["id"], "0s", "2s")
+        self.assertIsNotNone(segment)
+        self.assertEqual(p._cloud_text_patches[segment.material_id]["id"], styles[0]["id"])
+        p.save()
+        saved_path = os.path.join(self.test_output, "TestStyledText", "draft_info.json")
+        with open(saved_path, encoding="utf-8") as saved:
+            saved_draft = json.load(saved)
+        saved_texts = saved_draft["materials"]["texts"]
+        self.assertTrue(
+            any(
+                json.loads(text_material["content"])["styles"][0]
+                .get("effectStyle", {})
+                .get("id")
+                == styles[0]["id"]
+                for text_material in saved_texts
+            )
+        )
+        with self.assertRaises(ValueError):
+            p.add_styled_text("missing", "not-cached", "2s", "1s")
+
+    def test_21_native_ui_candidate_selection_uses_membership_by_default(self):
+        """实时候选必须来自剪映界面；会员素材默认可选，不可用项不可以。"""
+        ui_music = [
+            {"title": "轻快旅行", "source": "jianying_ui", "kind": "music", "available": True},
+            {"title": "会员曲", "source": "jianying_ui", "kind": "music", "membership_required": True},
+            {"title": "已下架", "source": "jianying_ui", "kind": "music", "available": False},
+            {"title": "旧索引", "source": "local_index", "kind": "music"},
+        ]
+        accepted = validate_ui_candidates(ui_music, "music")
+        self.assertEqual([item["title"] for item in accepted], ["轻快旅行", "会员曲"])
+        self.assertEqual(
+            [item["title"] for item in validate_ui_candidates(ui_music, "music", allow_membership=False)],
+            ["轻快旅行"],
+        )
+        ranked = rank_candidates(accepted, intent="轻快 旅行")
+        self.assertEqual(ranked[0]["title"], "轻快旅行")
 
     @classmethod
     def tearDownClass(cls):

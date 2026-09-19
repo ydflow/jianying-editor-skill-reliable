@@ -146,6 +146,25 @@ class MockingOpsMixin:
                             mat["type"] = "music"
                             has_modified = True
 
+            texts = materials.get("texts", [])
+            for mat in texts:
+                patch_info = self._cloud_text_patches.get(mat.get("id"))
+                if not patch_info:
+                    continue
+                try:
+                    content = json.loads(mat.get("content") or "{}")
+                except json.JSONDecodeError:
+                    continue
+                styles = content.get("styles")
+                if not isinstance(styles, list) or not styles:
+                    continue
+                styles[0]["effectStyle"] = {
+                    "id": patch_info["id"],
+                    "path": patch_info["path"],
+                }
+                mat["content"] = json.dumps(content, ensure_ascii=False)
+                has_modified = True
+
             if has_modified:
                 with open(content_path, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False)

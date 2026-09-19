@@ -32,6 +32,7 @@ JyProject(project_name: str, width: int = 1920, height: int = 1080, drafts_root:
 - `add_clip(media_path, source_start, duration, target_start=None, track_name="VideoTrack", **kwargs)`
 - `add_cloud_media(query, start_time=None, duration=None, track_name=None)`
 - `add_cloud_music(query, start_time=None, duration=None, name=None, duration_s=None)`
+- `add_styled_text(text, style_id, start_time=None, duration="3s", track_name="StyledText", **kwargs)`
 
 ### Text / Voice APIs
 
@@ -42,6 +43,18 @@ JyProject(project_name: str, width: int = 1920, height: int = 1080, drafts_root:
 `add_text_simple(..., **kwargs)` supports `style`, `border`, `clip_settings`, `font`, `background`, `shadow`.
 Use `clip_settings=draft.ClipSettings(transform_y=-0.8)` for subtitle bottom position.
 Do not pass `transform_y` directly as a top-level arg.
+
+`add_styled_text` only accepts a style whose resource folder exists in
+`assets/artistEffect/<style_id>/`. It applies a cached flower-text effect; it
+does not reproduce an arbitrary multi-field template from the current JianYing
+feed.
+
+### Native recommendation helpers
+
+`scripts/native_asset_selection.py` ranks only indexed local candidates. It
+never labels them as current recommendations. For a current 推荐音乐 or 热门文字模板
+request, first collect candidates from the visible JianYing UI with
+`source: "jianying_ui"`, then call `validate_ui_candidates(...)` before ranking.
 
 ### VFX / Transition APIs
 

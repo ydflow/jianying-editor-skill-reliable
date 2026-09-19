@@ -54,6 +54,21 @@ Valid APIs in this repo:
 - Explicit cloud music helper: `project.add_cloud_music(query, ...)`
 - Local audio file: `project.add_audio_safe(path, ...)`
 
+### Current Recommended Music
+
+When the request says “use the recommended music in JianYing,” inspect the
+currently visible **音频 > 音乐素材 > 推荐音乐** list. Treat title, availability,
+membership state, and preview as current-session evidence. Do not call a song
+from `cloud_music_library.csv` “recommended” unless it was observed in that
+UI during the same edit.
+
+Analyze the video’s pace, mood, dialogue and duration, then rank a small set
+of currently downloadable candidates. The default operating assumption is that
+the user has an active JianYing membership, so membership tracks are eligible.
+Preview the selected track before applying it. If the track cannot be downloaded
+or its ID is unavailable, stop that selection and choose another eligible
+visible candidate; never create a placeholder audio path.
+
 Examples:
 
 ```python

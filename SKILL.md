@@ -26,8 +26,13 @@ For generic editing requests, always follow the "Quick Edit Runtime Template" an
     - **双平台适配**：已全面支持 MacOS (路径探测/录屏) 与 Windows。
     - **Safe recovery**：支持 v5.9+ (`draft_info.json`)；重建异常草稿前先移入时间戳备份目录。
 4.  **配乐选择**：
-    - **简单演示使用默认音乐**。实际项目，应优先检索并推荐 `data/cloud_music_library.csv` 中的相关曲目，或根据视频主题（如“科技”、“温暖”）进行关键词过滤。
-    - 询问用户：“我发现了几首符合主题的云端音乐，要不要试试？（如：`Illuminate` - 科技感）”。
+    - 当用户指定剪映“推荐音乐”时，先从当前剪映界面 **音频 > 音乐素材 > 推荐音乐** 收集可用候选；不可把历史索引称为当前推荐。
+    - 默认假定用户拥有有效剪映会员。AI 根据画面节奏、情绪、口播和时长，在当前可下载候选中自行选择；下载或加入失败时换另一候选，不写入虚拟素材路径。
+    - 未指定推荐来源时，才可使用 `data/cloud_music_library.csv` 或本地音乐作为备选，并明确其来源。
+5. **热门文字模板**：
+    - 当用户指定剪映“热门字幕/文字模板”时，先检查 **文本 > 文字模板 > 热门** 的当前候选，判断可读性、遮挡、字数容量和是否可下载；默认假定用户拥有有效剪映会员。
+    - 普通逐句字幕使用 `add_text_simple()`；标题和强调文字可使用 `add_styled_text()`，但只允许应用 `assets/artistEffect/<style_id>/` 中已缓存的样式。
+    - 不能把当前 UI 的任意多文本模板假定为可由单个花字 ID 复刻；必须先用真实草稿验证其文本结构和替换结果。
 
 ##  规则指南 (Rules)
 
@@ -49,6 +54,7 @@ Read the individual rule files for specific tasks and constraints:
 
 - 云端视频 + 云端音乐：`rules/media.md` + `rules/audio-voice.md` -> `examples/cloud_video_music_tts_demo.py`
 - 智能配音与字幕 (Script-to-Video)：`rules/text.md` + `rules/audio-voice.md` -> 核心 API `add_narrated_subtitles`
+- 剪映推荐音乐 / 热门文字模板：`rules/audio-voice.md` + `rules/text.md` -> `scripts/native_asset_selection.py`（候选校验与排序）
 - 旁白与字幕对齐：`rules/text.md` + `rules/audio-voice.md` -> `examples/cloud_video_music_tts_demo.py`
 - 录屏与智能变焦：`rules/recording.md` -> `tools/recording/recorder.py`
 - 批量导出/无头导出：`rules/core.md` + `rules/cli.md` -> `examples/robust_auto_export.py`
